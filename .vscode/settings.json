@@ -1,0 +1,8 @@
+{
+    "C_Cpp.errorSquiggles": "Disabled",
+     
+    "files.associations": {
+          "calc.l": "c",
+          "calc.y": "c"
+    }
+}
