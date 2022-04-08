@@ -33,7 +33,7 @@ void ZeroStruct(struct Exp *new_polynom)
 
 	for(int i = 0; i < COUNT_MONOM; i++)
 	{
-		for(int j = 1; j < SIZE_MONOM; j++)
+		for(int j = 0; j < SIZE_MONOM; j++)
 			new_polynom->structure[i][j] = 0;
 	}
 }
@@ -71,11 +71,9 @@ int SearchMonom(int **structure_poly_1, int *monom_poly_2)
 
 void AddMonom(struct Exp *polynom, int *monom, int idx)
 {
+	polynom->structure[idx][0] += monom[0];
 	for(int i = 0; i < SIZE_MONOM; i++)
-	{
-		printf("%d", monom[i]);
 		polynom->structure[idx][i] += monom[i];
-	}
 }
 
 void AssignmentPolynom(char variable,struct Exp *polynom)
@@ -101,18 +99,21 @@ void PrintPolynom(struct Exp* polynom)
 {
 	int i=0, j=0;
 	char term;
-	//printf("[PrintPolynom] ");
+	
 	for(i = 0; i < COUNT_MONOM; i++)
 	{
-		for(j = 0; j < SIZE_MONOM; j++)
+		for(j = 1; j < SIZE_MONOM; j++)
 		{
-			if(polynom->structure[i][j] != 0)
+			//sequentially walked along the monomial
+			if(polynom->structure[i][j] != 0) 
 			{
 				term = IntSymbolToChar(j);
-				printf("%c");
+				printf("%c", term);
 			}
 		}
-		if(polynom->structure[i][j] != 0)
+		//does the next monomial exist?
+		//and overflow limit
+		if((polynom->structure[i + 1][0] != 0) && (i < COUNT_MONOM - 1)) 
 			printf(" + ");
 	}
 	printf("\n");
@@ -284,7 +285,7 @@ void MonomialPrint(int *result_monom)
 char IntSymbolToChar(int token)
 {
 	char symbol = '\0';
-	symbol = token + 'a';
+	symbol = token + 'a' - 1;
 	return symbol;
 }
 

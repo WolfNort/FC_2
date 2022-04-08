@@ -66,10 +66,10 @@ polynom 	:'(' polynom ')'
  				}
  			| monom 							
  				{	
-					MonomialPrint($1);
+					//MonomialPrint($1);
  					$$ = PolynomInit($1);
  					AddMonom($$, $1, 0);
- 					PrintPolynom($$);
+ 					//PrintPolynom($$);
  				}
  			;
 

@@ -1415,10 +1415,10 @@ yyreduce:
 /* Line 1792 of yacc.c  */
 #line 68 "calc.y"
     {	
-					MonomialPrint((yyvsp[(1) - (1)].piece_formula));
+					//MonomialPrint($1);
  					(yyval.formula) = PolynomInit((yyvsp[(1) - (1)].piece_formula));
  					AddMonom((yyval.formula), (yyvsp[(1) - (1)].piece_formula), 0);
- 					PrintPolynom((yyval.formula));
+ 					//PrintPolynom($$);
  				}
     break;
 
