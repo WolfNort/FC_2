@@ -13,6 +13,7 @@
 
 int CharSymbolToIndex(char token);
 char IntSymbolToChar(int token);
+void MonomialPrint(int *result_monom);
 
 
 struct Exp
@@ -71,7 +72,10 @@ int SearchMonom(int **structure_poly_1, int *monom_poly_2)
 void AddMonom(struct Exp *polynom, int *monom, int idx)
 {
 	for(int i = 0; i < SIZE_MONOM; i++)
+	{
+		printf("%d", monom[i]);
 		polynom->structure[idx][i] += monom[i];
+	}
 }
 
 void AssignmentPolynom(char variable,struct Exp *polynom)
@@ -97,7 +101,7 @@ void PrintPolynom(struct Exp* polynom)
 {
 	int i=0, j=0;
 	char term;
-	printf("[PrintPolynom] ");
+	//printf("[PrintPolynom] ");
 	for(i = 0; i < COUNT_MONOM; i++)
 	{
 		for(j = 0; j < SIZE_MONOM; j++)
@@ -221,7 +225,7 @@ int* CreateList()
 
 int* MonomialInit(char symbol, int degree, int coef)
 {
-	printf("init\n");
+	//printf("init\n");
 	int idx = 0;
 
 	int *new_monomial =	CreateList();
@@ -229,7 +233,7 @@ int* MonomialInit(char symbol, int degree, int coef)
 	if(symbol != 0)
 	{
 		idx = CharSymbolToIndex(symbol) + 1;
-		printf("[init] %d\n", idx);
+		//printf("[init] %d\n", idx);
 		new_monomial[idx] = degree;
 	}
 
@@ -237,7 +241,7 @@ int* MonomialInit(char symbol, int degree, int coef)
 	return new_monomial;
 }
 
-int* MonomialMultiple(int *monom_1, int *monom_2)
+int* MonomialSummary(int *monom_1, int *monom_2)
 {
 	int *result = MonomialInit(0, 0, 1);
 	for(int i = 1; i <= SIZE_MONOM; i++)
@@ -250,20 +254,21 @@ int* MonomialMultiple(int *monom_1, int *monom_2)
 
 void MonomialPrint(int *result_monom)
 {
-	printf("hey, i'm here. In the print\n");
+	//printf("hey, i'm here. In the print\n");
 	char symbol = '\0';
 	for(int i = 1; i <= SIZE_MONOM; i++)
 	{
 
 		if(result_monom[i] != 0)
 		{
-			printf("[multiple] %d\n", result_monom[i]);
-			symbol = IntSymbolToChar(i - 2);
-			printf("%c\n", symbol);
+			//printf("[multiple] %d\n", result_monom[i]);
+			symbol = IntSymbolToChar(i - 1);
+			printf("%c", symbol);
 			//if(result_monom[i] > 1)
 			//	printf("^%d",result_monom[i]);
 		}
 	}
+	printf("\n");
 }
 
 /*struct Exp* SetNumber(struct Exp *expr, int num,char symbol, int degree)
@@ -287,7 +292,7 @@ int CharSymbolToIndex(char token)
 {
 	int idx = -1;
 	if(islower(token)) 
-		idx = token - 'a' + 1;
+		idx = token - 'a';
 	
 	else if(isupper(token)) 
 		idx = token - 'A';

@@ -66,6 +66,7 @@ polynom 	:'(' polynom ')'
  				}
  			| monom 							
  				{	
+					MonomialPrint($1);
  					$$ = PolynomInit($1);
  					AddMonom($$, $1, 0);
  					PrintPolynom($$);
@@ -74,10 +75,9 @@ polynom 	:'(' polynom ')'
 
 monom 		: term monom						
 				{
-					printf("%c\n", $1);
+					//printf("%c", $1);
  					$$ = MonomialInit($1, 1, 1);
- 					$$ = MonomialMultiple($$, $2);
- 					MonomialPrint($$);
+ 					$$ = MonomialSummary($$, $2);
  				}	
 			| number 						
 				{
@@ -90,8 +90,9 @@ monom 		: term monom
 				}
  			| term	 						
  				{
-	 				printf("%c\n", $1);
+	 				//printf("%c\n", $1);
  					$$ = MonomialInit($1, 1, 1);
+					//AddMonom($$, monom, 0);
  				}	
  			;
 

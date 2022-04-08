@@ -449,7 +449,7 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    30,    30,    34,    38,    43,    50,    58,    62,    67,
-      75,    82,    87,    91
+      76,    82,    87,    91
 };
 #endif
 
@@ -1415,6 +1415,7 @@ yyreduce:
 /* Line 1792 of yacc.c  */
 #line 68 "calc.y"
     {	
+					MonomialPrint((yyvsp[(1) - (1)].piece_formula));
  					(yyval.formula) = PolynomInit((yyvsp[(1) - (1)].piece_formula));
  					AddMonom((yyval.formula), (yyvsp[(1) - (1)].piece_formula), 0);
  					PrintPolynom((yyval.formula));
@@ -1423,12 +1424,11 @@ yyreduce:
 
   case 10:
 /* Line 1792 of yacc.c  */
-#line 76 "calc.y"
+#line 77 "calc.y"
     {
-					printf("%c\n", (yyvsp[(1) - (2)].id));
+					//printf("%c", $1);
  					(yyval.piece_formula) = MonomialInit((yyvsp[(1) - (2)].id), 1, 1);
- 					(yyval.piece_formula) = MonomialMultiple((yyval.piece_formula), (yyvsp[(2) - (2)].piece_formula));
- 					MonomialPrint((yyval.piece_formula));
+ 					(yyval.piece_formula) = MonomialSummary((yyval.piece_formula), (yyvsp[(2) - (2)].piece_formula));
  				}
     break;
 
@@ -1453,14 +1453,15 @@ yyreduce:
 /* Line 1792 of yacc.c  */
 #line 92 "calc.y"
     {
-	 				printf("%c\n", (yyvsp[(1) - (1)].id));
+	 				//printf("%c\n", $1);
  					(yyval.piece_formula) = MonomialInit((yyvsp[(1) - (1)].id), 1, 1);
+					//AddMonom($$, monom, 0);
  				}
     break;
 
 
 /* Line 1792 of yacc.c  */
-#line 1464 "calc.tab.c"
+#line 1465 "calc.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1692,7 +1693,7 @@ yyreturn:
 
 
 /* Line 2055 of yacc.c  */
-#line 119 "calc.y"
+#line 120 "calc.y"
                      /* C code */
 
 
