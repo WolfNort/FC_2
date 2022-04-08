@@ -51,12 +51,11 @@ int SearchMonom(int **structure_poly_1, int *monom_poly_2)
 				for(int j = 1; j < SIZE_MONOM; i++) 
 				{
 					if(structure_poly_1[i][j] != monom_poly_2[j])
-						continue;
+						break;
 					if(j == SIZE_MONOM - 1) 
 						return i;
 				}
 				// если мнономы оказались одинаковыми 
-
 			}
 			else 
 				return i;
@@ -263,7 +262,7 @@ void MonomialPrint(int *result_monom)
 		if(result_monom[i] != 0)
 		{
 			//printf("[multiple] %d\n", result_monom[i]);
-			symbol = IntSymbolToChar(i - 1);
+			symbol = IntSymbolToChar(i);
 			printf("%c", symbol);
 			//if(result_monom[i] > 1)
 			//	printf("^%d",result_monom[i]);

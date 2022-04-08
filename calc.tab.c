@@ -448,8 +448,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    30,    30,    34,    38,    43,    50,    58,    62,    67,
-      76,    82,    87,    91
+       0,    30,    30,    34,    38,    43,    50,    58,    62,    68,
+      77,    83,    88,    92
 };
 #endif
 
@@ -1406,14 +1406,15 @@ yyreduce:
 /* Line 1792 of yacc.c  */
 #line 63 "calc.y"
     {
+					PolynomSummary((yyvsp[(1) - (3)].formula), (yyvsp[(3) - (3)].formula));
  					//$$ = CalculateMinusPlus($1, $3, 0);	
- 					;
+ 					
  				}
     break;
 
   case 9:
 /* Line 1792 of yacc.c  */
-#line 68 "calc.y"
+#line 69 "calc.y"
     {	
 					//MonomialPrint($1);
  					(yyval.formula) = PolynomInit((yyvsp[(1) - (1)].piece_formula));
@@ -1424,7 +1425,7 @@ yyreduce:
 
   case 10:
 /* Line 1792 of yacc.c  */
-#line 77 "calc.y"
+#line 78 "calc.y"
     {
 					//printf("%c", $1);
  					(yyval.piece_formula) = MonomialInit((yyvsp[(1) - (2)].id), 1, 1);
@@ -1434,7 +1435,7 @@ yyreduce:
 
   case 11:
 /* Line 1792 of yacc.c  */
-#line 83 "calc.y"
+#line 84 "calc.y"
     {
 					//$$ = PolyInit($1, 1, 0, 0);
 					;
@@ -1443,7 +1444,7 @@ yyreduce:
 
   case 12:
 /* Line 1792 of yacc.c  */
-#line 88 "calc.y"
+#line 89 "calc.y"
     {
 					;
 				}
@@ -1451,7 +1452,7 @@ yyreduce:
 
   case 13:
 /* Line 1792 of yacc.c  */
-#line 92 "calc.y"
+#line 93 "calc.y"
     {
 	 				//printf("%c\n", $1);
  					(yyval.piece_formula) = MonomialInit((yyvsp[(1) - (1)].id), 1, 1);
@@ -1461,7 +1462,7 @@ yyreduce:
 
 
 /* Line 1792 of yacc.c  */
-#line 1465 "calc.tab.c"
+#line 1466 "calc.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1693,7 +1694,7 @@ yyreturn:
 
 
 /* Line 2055 of yacc.c  */
-#line 120 "calc.y"
+#line 121 "calc.y"
                      /* C code */
 
 

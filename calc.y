@@ -61,8 +61,9 @@ polynom 	:'(' polynom ')'
 				}
  			| polynom '+' polynom			
  				{
+					PolynomSummary($1, $3);
  					//$$ = CalculateMinusPlus($1, $3, 0);	
- 					;
+ 					
  				}
  			| monom 							
  				{	
