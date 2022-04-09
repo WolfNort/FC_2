@@ -23,6 +23,7 @@ int yylex();
 %type <id> assignment
 
 %left '+' '-'
+%left '*'
 
 %%
 
@@ -57,6 +58,11 @@ polynom 	:'(' polynom ')'
 				{	
 					$$ = $2;	
 				}
+			| '-' polynom
+				{
+					$$ = PolynomInit();
+					PolynomMinus($$, $2);
+				} 
 			| polynom '-' polynom
 				{
 					PolynomMinus($1, $3);
@@ -66,9 +72,13 @@ polynom 	:'(' polynom ')'
  				{
 					PolynomSummary($1, $3); 					
  				}
+			| polynom '*' polynom
+				{
+					PolynomMultiple($1, $3);
+				}	
  			| monom 							
  				{	
- 					$$ = PolynomInit($1);
+ 					$$ = PolynomInit();
  					AddMonom($$, $1, 0);
  				}
  			;

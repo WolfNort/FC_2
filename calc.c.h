@@ -111,6 +111,27 @@ void PolynomMinus(struct Exp *polynom_1, struct Exp *polynom_2)
 	}
 }
 
+void PolynomMultiple(struct Exp *polynom_1, struct Exp *polynom_2)
+{
+	for(int p_1 = 0; p_1 < COUNT_MONOM; p_1++)
+	{
+		//monomials ran out
+		if(polynom_1->structure[p_1][0] == 0)
+			break;
+		for(int p_2 = 0; p_2 < COUNT_MONOM; p_2++)
+		{
+			if(polynom_2->structure[p_2][0] == 0)
+				break;
+			//multiply coefficients
+			else
+				polynom_1->structure[p_1][0] *= polynom_1->structure[p_2][0];
+
+			for(int m = 1; m < SIZE_MONOM; m++)
+				polynom_1->structure[p_1][m] += polynom_1->structure[p_2][m];
+		}
+	}
+}
+
 void PrintPolynom(struct Exp* polynom)
 {
 	int i=0, j=0;
@@ -138,6 +159,11 @@ void PrintPolynom(struct Exp* polynom)
 			{
 				term = IntSymbolToChar(j);
 				printf("%c", term);
+				if(polynom->structure[i][j] > 1)
+				{
+					printf("^");
+					printf("%d", polynom->structure[i][j]);
+				}
 			}
 		}
 		//does the next monomial exist?
@@ -148,7 +174,7 @@ void PrintPolynom(struct Exp* polynom)
 	printf("\n");
 }
 
-struct Exp* PolynomInit(int * monom)
+struct Exp* PolynomInit()
 {
 	struct Exp *new_polynom = (struct Exp*)malloc(sizeof(struct Exp));
 	new_polynom->structure = (int **)malloc(COUNT_MONOM * sizeof(int*));
