@@ -1,5 +1,5 @@
 %{
-#include "calc.h"
+#include "calc.c.h"
 void yyerror (char *s);
 int yylex();
 %}
@@ -22,7 +22,7 @@ int yylex();
 %type <num> line 
 %type <id> assignment
 
-%left '+'
+%left '+' '-'
 
 %%
 
@@ -38,12 +38,10 @@ line		: assignment ';'
 			| print variable ';' 			
 				{
 					int idx = CharSymbolToIndex($2);
-					//PrintPolynom(idx);
 				}
 			| line print variable	';' 	
 				{
 					int idx = CharSymbolToIndex($3);
-					//PrintPolynom(idx);
 				}
 				;
 
@@ -59,31 +57,36 @@ polynom 	:'(' polynom ')'
 				{	
 					$$ = $2;	
 				}
+			| polynom '-' polynom
+				{
+					PolynomMinus($1, $3);
+					;
+				}
  			| polynom '+' polynom			
  				{
-					PolynomSummary($1, $3);
- 					//$$ = CalculateMinusPlus($1, $3, 0);	
- 					
+					PolynomSummary($1, $3); 					
  				}
  			| monom 							
  				{	
-					//MonomialPrint($1);
  					$$ = PolynomInit($1);
  					AddMonom($$, $1, 0);
- 					//PrintPolynom($$);
  				}
  			;
 
 monom 		: term monom						
 				{
-					//printf("%c", $1);
  					$$ = MonomialInit($1, 1, 1);
- 					$$ = MonomialSummary($$, $2);
+ 					$$ = MonomialMultipl($$, $2);
  				}	
 			| number 						
 				{
-					//$$ = PolyInit($1, 1, 0, 0);
+					$$ = MonomialInit(0, 1, $1);
 					;
+				}
+			| number monom
+				{
+					$$ = MonomialInit(0, 1, $1);
+					$$ = MonomialMultipl($$, $2);
 				}
 			| variable		 				
 				{
@@ -91,36 +94,11 @@ monom 		: term monom
 				}
  			| term	 						
  				{
-	 				//printf("%c\n", $1);
  					$$ = MonomialInit($1, 1, 1);
-					//AddMonom($$, monom, 0);
  				}	
  			;
 
-/*line    : assignment ';'		{;} //непосредственно выражение
-//		| exit_command ';'		{exit(EXIT_SUCCESS);}
-		| print expr ';'		{PrintPolynom($2);} //на вход идентификато
-		| line assignment ';'	{;}
-		| line print expr ';'	{PrintPolynom($3);}
-//		| line exit_command ';'	{exit(EXIT_SUCCESS);}
-        ;
-
-assignment : identifier '=' expr  { updateSymbolVal($1,$3); }
-		;
-
-expr    : term                  {$$ = $1;}
-//       	| expr '+' term          {$$ = $1 + $3;}
-//       	| expr '-' term          {$$ = $1 - $3;}
-       	;
-term   	: number                {$$ = SetNumber($$, $1, NULL, 0);}
-		| element				{$$ = SetSymbol($$, $1, 1);}
-		| identifier			{$$ = symbolVal($1);} 
-
-        ;*/
-
 %%                     /* C code */
-
-
 
 int main (void) {
 	/* init symbol table */

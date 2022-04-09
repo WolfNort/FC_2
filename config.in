@@ -1,2 +1,2 @@
-B = abcd + abd;
+B = abcd - 4abcd + ac;
 <<B;
