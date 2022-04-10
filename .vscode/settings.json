@@ -2,7 +2,12 @@
     "C_Cpp.errorSquiggles": "Disabled",
      
     "files.associations": {
-          "calc.l": "c",
-          "calc.y": "c"
+        "calc.l": "c",
+        "calc.y": "c",
+        "deque": "c",
+        "initializer_list": "c",
+        "type_traits": "c",
+        "xstring": "c",
+        "xutility": "c"
     }
 }

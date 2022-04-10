@@ -40,7 +40,7 @@ void MonomialPrint(int *result_monom);
 void AssignmentPolynom(char variable,struct Exp *polynom);
 void PolynomSummary(struct Exp *polynom_1, struct Exp *polynom_2);
 void PolynomMinus(struct Exp *polynom_1, struct Exp *polynom_2);
-void PolynomMultiple(struct Exp *polynom_1, struct Exp *polynom_2);
+struct Exp* PolynomMultiple(struct Exp *polynom_1, struct Exp *polynom_2);
 void PrintPolynom(struct Exp* polynom);
 struct Exp* PolynomInit();
 

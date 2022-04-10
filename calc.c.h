@@ -47,8 +47,10 @@ void AddMonom(struct Exp *polynom, int *monom, int idx)
 	//add a new monomial
 	if(polynom->structure[idx][0] == 0)
 	{
+		polynom->size +=1;
 		for(int i = 1; i < SIZE_MONOM; i++)
 			polynom->structure[idx][i] += monom[i];
+		
 	}
 	//the monomials are the same, you need to change the coeff
 	polynom->structure[idx][0] += monom[0];
@@ -111,8 +113,11 @@ void PolynomMinus(struct Exp *polynom_1, struct Exp *polynom_2)
 	}
 }
 
-void PolynomMultiple(struct Exp *polynom_1, struct Exp *polynom_2)
+struct Exp* PolynomMultiple(struct Exp *polynom_1, struct Exp *polynom_2)
 {
+	struct Exp *result = PolynomInit();
+	int p_new = 0;
+
 	for(int p_1 = 0; p_1 < COUNT_MONOM; p_1++)
 	{
 		//monomials ran out
@@ -124,12 +129,14 @@ void PolynomMultiple(struct Exp *polynom_1, struct Exp *polynom_2)
 				break;
 			//multiply coefficients
 			else
-				polynom_1->structure[p_1][0] *= polynom_1->structure[p_2][0];
-
+				result->structure[p_new][0] = polynom_2->structure[p_2][0] * polynom_1->structure[p_1][0];
+			
 			for(int m = 1; m < SIZE_MONOM; m++)
-				polynom_1->structure[p_1][m] += polynom_1->structure[p_2][m];
+				result->structure[p_new][m] = polynom_2->structure[p_2][m] + polynom_1->structure[p_1][m];
+			p_new ++;
 		}
 	}
+	return result;
 }
 
 void PrintPolynom(struct Exp* polynom)

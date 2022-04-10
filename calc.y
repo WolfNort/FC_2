@@ -18,12 +18,16 @@ int yylex();
 %token <num> number
 %type <piece_formula> monom
 %token <id> variable term 
-%type <formula> polynom
+%type <formula> polynom  brackets 
 %type <num> line 
 %type <id> assignment
 
-%left '+' '-'
-%left '*'
+%left '+' 
+%left NEG
+%left '-'
+
+%right '*'
+%left '(' ')'
 
 %%
 
@@ -54,40 +58,60 @@ assignment	: variable '=' polynom
 				}
 			;
 
-polynom 	:'(' polynom ')'				
-				{	
-					$$ = $2;	
-				}
-			| '-' polynom
+polynom 	: brackets
 				{
+					$$ =$1;
+				}
+			| brackets brackets %prec '*'
+				{
+					printf("brackets brackets prec '*'\n");
+					$$ = PolynomMultiple($1, $2);
+
+				}
+
+			|'-' polynom %prec NEG
+				{
+					printf("'-' polynom\n");
 					$$ = PolynomInit();
 					PolynomMinus($$, $2);
 				} 
 			| polynom '-' polynom
 				{
+					printf("polynom '-' polynom\n");
 					PolynomMinus($1, $3);
 					;
 				}
  			| polynom '+' polynom			
  				{
+					printf("polynom '+' polynom\n");
 					PolynomSummary($1, $3); 					
  				}
+
 			| polynom '*' polynom
 				{
-					PolynomMultiple($1, $3);
-				}	
+					printf("polynom '*' polynom\n");
+					$$ = PolynomMultiple($1, $3);
+				}
  			| monom 							
  				{	
+					 printf("monom\n");
  					$$ = PolynomInit();
  					AddMonom($$, $1, 0);
  				}
  			;
 
+brackets 	: '(' polynom ')'
+				{
+					$$ = $2;
+				}
+;
+
+
 monom 		: term monom						
 				{
  					$$ = MonomialInit($1, 1, 1);
  					$$ = MonomialMultipl($$, $2);
- 				}	
+ 				}
 			| number 						
 				{
 					$$ = MonomialInit(0, 1, $1);
