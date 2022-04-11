@@ -147,21 +147,22 @@ struct Exp* PolynomPower(struct Exp* polynom, int power)
 	struct Exp *result = polynom;
 	if(polynom->size == 1)
 	{
-		printf("MonomlPower\n");
 		MonomlPower(polynom->structure[0], power);
 		result = polynom;
 	}
 	else
 	{
 		for(int i = 0; i < power-1; i++)
-		{
-			printf("PolynomMultiple(result, polynom)\n");
 			result = PolynomMultiple(result, polynom);
-		}
 	}
 	return result;
 }
 
+struct Exp* GetPolynom(char variable)
+{
+	int idx = CharSymbolToIndex(variable);
+	return &symbols[idx];
+}
 
 void MonomlPower(int* monom, int power)
 {

@@ -23,8 +23,8 @@ int yylex();
 
 %type <formula> polynom  
 %type <formula> brackets
-%type <formula> variable_exp
 
+%type <num> power
 %type <num> line
 
 %type <piece_formula> monom 
@@ -70,7 +70,6 @@ assignment	: variable '=' polynom
 
 polynom 	: minus polynom %prec NEG
 				{
-					printf("'-' polynom\n");
 					$$ = PolynomInit();
 					PolynomMinus($$, $2);
 				} 
@@ -80,34 +79,26 @@ polynom 	: minus polynom %prec NEG
 				}
 			| brackets brackets %prec '*'
 				{
-					printf("brackets brackets prec '*'\n");
 					$$ = PolynomMultiple($1, $2);
-
 				}
 			| polynom minus polynom
 				{
-					printf("polynom '-' polynom\n");
 					PolynomMinus($1, $3);
-					;
 				}
  			| polynom '+' polynom			
  				{
-					printf("polynom '+' polynom\n");
 					PolynomSummary($1, $3); 					
  				}
-
 			| polynom '*' polynom
 				{
-					printf("polynom '*' polynom\n");
 					$$ = PolynomMultiple($1, $3);
 				}
-			| variable_exp
+			| variable
 				{
-					;
+					$$ = GetPolynom($1);;
 				}
  			| monom 							
  				{	
-					printf("monom\n");
  					$$ = PolynomInit();
  					AddMonom($$, $1, 0);
  				}
@@ -117,7 +108,7 @@ brackets 	: '(' polynom ')'
 				{
 					$$ = $2;
 				}
-			| brackets '^' number
+			| brackets '^' power
 				{
 					$$ = PolynomPower($1, $3);;
 				}
@@ -131,12 +122,37 @@ brackets 	: '(' polynom ')'
 				{
 					$$ = MonomialMultipl($1, $2);;
 				}
-			| symbol '^' number
+			| symbol '^' power
 				{
 					MonomlPower($1, $3);
 				}
-
  			;
+
+power 		: number
+				{
+					$$ = $1;
+				}
+			| power '+' power
+				{
+					$$ = $1 + $3;
+				}
+			| power minus power
+				{
+					$$ = $1 - $3;
+				}
+			| power '*' power
+				{
+					$$ = $1 * $3;
+				}
+			| power '^' power 
+				{
+					$$ = pow($1, $3);
+				}
+			| '(' power ')'
+				{
+					$$ = $2;
+				}
+			;
 
 symbol		: number
 				{
@@ -147,13 +163,6 @@ symbol		: number
  				{
  					$$ = MonomialInit($1, 1, 1);
  				}
-
-variable_exp: variable
-				{
-					$$ = GetPolynom($1);
-				}			
-
-
 
 %%                     /* C code */
 
