@@ -116,6 +116,8 @@ void PolynomMinus(struct Exp *polynom_1, struct Exp *polynom_2)
 struct Exp* PolynomMultiple(struct Exp *polynom_1, struct Exp *polynom_2)
 {
 	struct Exp *result = PolynomInit();
+	struct Exp *piece_polynom = PolynomInit();
+
 	int p_new = 0;
 
 	for(int p_1 = 0; p_1 < COUNT_MONOM; p_1++)
@@ -129,32 +131,70 @@ struct Exp* PolynomMultiple(struct Exp *polynom_1, struct Exp *polynom_2)
 				break;
 			//multiply coefficients
 			else
-				result->structure[p_new][0] = polynom_2->structure[p_2][0] * polynom_1->structure[p_1][0];
+				piece_polynom->structure[0][0] = polynom_2->structure[p_2][0] * polynom_1->structure[p_1][0];
 			
 			for(int m = 1; m < SIZE_MONOM; m++)
-				result->structure[p_new][m] = polynom_2->structure[p_2][m] + polynom_1->structure[p_1][m];
+				piece_polynom->structure[0][m] = polynom_2->structure[p_2][m] + polynom_1->structure[p_1][m];
+			PolynomSummary(result, piece_polynom);
 			p_new ++;
 		}
 	}
 	return result;
 }
 
+struct Exp* PolynomPower(struct Exp* polynom, int power)
+{
+	struct Exp *result = polynom;
+	if(polynom->size == 1)
+	{
+		printf("MonomlPower\n");
+		MonomlPower(polynom->structure[0], power);
+		result = polynom;
+	}
+	else
+	{
+		for(int i = 0; i < power-1; i++)
+		{
+			printf("PolynomMultiple(result, polynom)\n");
+			result = PolynomMultiple(result, polynom);
+		}
+	}
+	return result;
+}
+
+
+void MonomlPower(int* monom, int power)
+{
+	for(int i = 1; i < SIZE_MONOM; i++)
+	{
+		if(monom[i] != 0)
+			monom[i] *= power;
+	}
+	monom[0] = pow(monom[0], power);
+}
+
+
 void PrintPolynom(struct Exp* polynom)
 {
-	int i=0, j=0;
+	int i=0, j=0, coeff = 0, flag_begin_monom = 0;
 	char term;
 	printf("%c = ", polynom->id_variable);
 	for(i = 0; i < COUNT_MONOM; i++)
 	{
-		if(polynom->structure[i][0] != 0)
+		coeff = polynom->structure[i][0];
+		if(coeff != 0)
 		{
-			if(polynom->structure[i][0] > 1 || polynom->structure[i][0] < 0)
+			if (coeff > 0)
 			{
-				if(polynom->structure[i][0] == -1)
-					printf("-");
-				else
-					printf("%d", polynom->structure[i][0]);
+				if(flag_begin_monom == 1)
+					printf(" + ");
 			}
+			else
+				printf(" - ");
+			
+			if(abs(coeff) != 1)
+				printf("%d", abs(coeff));
+			flag_begin_monom = 1;
 		}
 		else 
 			break;
@@ -168,15 +208,11 @@ void PrintPolynom(struct Exp* polynom)
 				printf("%c", term);
 				if(polynom->structure[i][j] > 1)
 				{
-					printf("^");
-					printf("%d", polynom->structure[i][j]);
+					printf("^(");
+					printf("%d)", polynom->structure[i][j]);
 				}
 			}
 		}
-		//does the next monomial exist?
-		//and overflow limit
-		if((polynom->structure[i + 1][0] != 0) && (i < COUNT_MONOM - 1)) 
-			printf(" + ");
 	}
 	printf("\n");
 }

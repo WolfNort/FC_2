@@ -48,10 +48,11 @@ extern int yydebug;
    enum yytokentype {
      print = 258,
      exit_command = 259,
-     number = 260,
-     variable = 261,
-     term = 262,
-     NEG = 263
+     minus = 260,
+     number = 261,
+     variable = 262,
+     term = 263,
+     NEG = 264
    };
 #endif
 
@@ -69,7 +70,7 @@ typedef union YYSTYPE
 	
 
 /* Line 2058 of yacc.c  */
-#line 73 "calc.tab.h"
+#line 74 "calc.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

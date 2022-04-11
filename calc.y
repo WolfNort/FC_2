@@ -14,18 +14,28 @@ int yylex();
 %start line
 %token print
 %token exit_command
+%token minus
 
 %token <num> number
-%type <piece_formula> monom
-%token <id> variable term 
-%type <formula> polynom  brackets 
-%type <num> line 
+
+%token <id> variable  
+%token <id> term
+
+%type <formula> polynom  
+%type <formula> brackets
+%type <formula> variable_exp
+
+%type <num> line
+
+%type <piece_formula> monom 
+%type <piece_formula> symbol
+
 %type <id> assignment
 
 %left '+' 
+%left minus
 %left NEG
-%left '-'
-
+%left '^'
 %right '*'
 %left '(' ')'
 
@@ -58,7 +68,13 @@ assignment	: variable '=' polynom
 				}
 			;
 
-polynom 	: brackets
+polynom 	: minus polynom %prec NEG
+				{
+					printf("'-' polynom\n");
+					$$ = PolynomInit();
+					PolynomMinus($$, $2);
+				} 
+			| brackets
 				{
 					$$ =$1;
 				}
@@ -68,14 +84,7 @@ polynom 	: brackets
 					$$ = PolynomMultiple($1, $2);
 
 				}
-
-			|'-' polynom %prec NEG
-				{
-					printf("'-' polynom\n");
-					$$ = PolynomInit();
-					PolynomMinus($$, $2);
-				} 
-			| polynom '-' polynom
+			| polynom minus polynom
 				{
 					printf("polynom '-' polynom\n");
 					PolynomMinus($1, $3);
@@ -92,9 +101,13 @@ polynom 	: brackets
 					printf("polynom '*' polynom\n");
 					$$ = PolynomMultiple($1, $3);
 				}
+			| variable_exp
+				{
+					;
+				}
  			| monom 							
  				{	
-					 printf("monom\n");
+					printf("monom\n");
  					$$ = PolynomInit();
  					AddMonom($$, $1, 0);
  				}
@@ -104,33 +117,43 @@ brackets 	: '(' polynom ')'
 				{
 					$$ = $2;
 				}
-;
-
-
-monom 		: term monom						
+			| brackets '^' number
 				{
- 					$$ = MonomialInit($1, 1, 1);
- 					$$ = MonomialMultipl($$, $2);
- 				}
-			| number 						
+					$$ = PolynomPower($1, $3);;
+				}
+			;
+
+ monom 		: symbol
+				{
+					$$ = $1;
+				}
+			| symbol monom
+				{
+					$$ = MonomialMultipl($1, $2);;
+				}
+			| symbol '^' number
+				{
+					MonomlPower($1, $3);
+				}
+
+ 			;
+
+symbol		: number
 				{
 					$$ = MonomialInit(0, 1, $1);
 					;
 				}
-			| number monom
-				{
-					$$ = MonomialInit(0, 1, $1);
-					$$ = MonomialMultipl($$, $2);
-				}
-			| variable		 				
-				{
-					;
-				}
- 			| term	 						
+			| term
  				{
  					$$ = MonomialInit($1, 1, 1);
- 				}	
- 			;
+ 				}
+
+variable_exp: variable
+				{
+					$$ = GetPolynom($1);
+				}			
+
+
 
 %%                     /* C code */
 

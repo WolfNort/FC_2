@@ -2,14 +2,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-
+#include <math.h>
 
 
 #define COUNT_MONOM 100
 #define COUNT_POLINOM 26
 #define SIZE_MONOM (COUNT_POLINOM + 1)
-#define PLUS 0
 #define MINUS 1
+#define PLUS 0
 #define MULTIPL 2
 
 struct Exp
@@ -35,12 +35,14 @@ void DeleteMonom(struct Exp *polynom, int *monom, int idx);
 int* MonomialInit(char symbol, int degree, int coef);
 int* MonomialMultipl(int *monom_1, int *monom_2);
 void MonomialPrint(int *result_monom);
+void MonomlPower(int* monom, int power);
 
 //polynomial
 void AssignmentPolynom(char variable,struct Exp *polynom);
 void PolynomSummary(struct Exp *polynom_1, struct Exp *polynom_2);
 void PolynomMinus(struct Exp *polynom_1, struct Exp *polynom_2);
 struct Exp* PolynomMultiple(struct Exp *polynom_1, struct Exp *polynom_2);
+struct Exp* PolynomPower(struct Exp* polynom, int power);
 void PrintPolynom(struct Exp* polynom);
 struct Exp* PolynomInit();
 
