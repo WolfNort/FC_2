@@ -49,10 +49,11 @@ extern int yydebug;
      print = 258,
      exit_command = 259,
      minus = 260,
-     number = 261,
-     variable = 262,
-     term = 263,
-     NEG = 264
+     comment = 261,
+     number = 262,
+     variable = 263,
+     term = 264,
+     NEG = 265
    };
 #endif
 
@@ -70,7 +71,7 @@ typedef union YYSTYPE
 	
 
 /* Line 2058 of yacc.c  */
-#line 74 "calc.tab.h"
+#line 75 "calc.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

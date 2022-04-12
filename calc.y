@@ -11,10 +11,11 @@ int yylex();
 	struct 	Exp *formula
 	}         /* Yacc definitions */
 
-%start line
+%start begin
 %token print
 %token exit_command
 %token minus
+%token comment
 
 %token <num> number
 
@@ -25,7 +26,9 @@ int yylex();
 %type <formula> brackets
 
 %type <num> power
-%type <num> line
+%type <num> begin 
+%type <num> line 
+%type <num> errors
 
 %type <piece_formula> monom 
 %type <piece_formula> symbol
@@ -40,32 +43,59 @@ int yylex();
 %left '(' ')'
 
 %%
+begin 		: begin line 
+				{
+					;
+				}
+			| line 
+				{
+					;
+				}
 
+			;
 /* descriptions of expected inputs     corresponding actions (in C) */
-line		: assignment ';'				
+line		: assignment ';'	
 				{
 					;
 				}
-			| line assignment ';'			
-				{
-					;
-				}
-			| print variable ';' 			
+
+			| print variable ';'
 				{
 					int idx = CharSymbolToIndex($2);
+					PrintPolynom(&symbols[idx]);
 				}
-			| line print variable	';' 	
+			| comment
 				{
-					int idx = CharSymbolToIndex($3);
+					
 				}
-				;
+			// | errors
+			// {
+			// 	yyerror("Error initialization");
+			// }
 
-assignment	: variable '=' polynom			
+			;
+
+assignment	: variable '=' polynom 		
 				{
 					int idx = CharSymbolToIndex($1);
 					AssignmentPolynom($1, $3);
-					PrintPolynom($3);
 				}
+			| errors
+				{
+					;
+				}
+			;
+errors 		: 
+			'\n'
+				{
+					;
+				}
+			| variable '='
+				{
+					yyerror("Error initialization");
+					exit(-1);
+				}
+			
 			;
 
 polynom 	: minus polynom %prec NEG

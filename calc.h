@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <math.h>
+#include <errno.h>
 
 
 #define COUNT_MONOM 100

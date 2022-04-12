@@ -4,7 +4,7 @@ void yyerror (char *s);
 int yylex();
 %}
 %%
-
+"//"                    {return comment;}
 "-"                     {return minus;}
 "<<"				   	{return print;}
 "exit"				   	{return exit_command;}
