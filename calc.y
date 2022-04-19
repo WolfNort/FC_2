@@ -183,11 +183,11 @@ symbol		: number
 					$$ = MonomialInit(0, 1, $1);
 					;
 				}
-			| minus number '^' %prec NEG
-				{
-					printf("Negative exponents are not supported\n");
-					exit(0);
-				}	
+			// | minus number '^' %prec NEG
+			// 	{
+			// 		printf("Negative exponents are not supported\n");
+			// 		exit(0);
+			// 	}	
 			| term
  				{
  					$$ = MonomialInit($1, 1, 1);
