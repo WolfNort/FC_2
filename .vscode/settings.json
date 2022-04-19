@@ -9,6 +9,7 @@
         "type_traits": "c",
         "xstring": "c",
         "xutility": "c",
-        "xstddef": "c"
+        "xstddef": "c",
+        "xlocale": "c"
     }
 }

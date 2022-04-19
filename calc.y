@@ -15,7 +15,8 @@ int yylex();
 %token print
 %token exit_command
 %token minus
-%token comment
+
+
 
 %token <num> number
 
@@ -53,7 +54,7 @@ begin 		: begin line
 				}
 
 			;
-/* descriptions of expected inputs     corresponding actions (in C) */
+/* descriptigit ons of expected inputs     corresponding actions (in C) */
 line		: assignment ';'	
 				{
 					;
@@ -64,10 +65,7 @@ line		: assignment ';'
 					int idx = CharSymbolToIndex($2);
 					PrintPolynom(&symbols[idx]);
 				}
-			| comment
-				{
-					
-				}
+
 			// | errors
 			// {
 			// 	yyerror("Error initialization");
@@ -152,16 +150,12 @@ brackets 	: '(' polynom ')'
 				{
 					$$ = MonomialMultipl($1, $2);;
 				}
-			| symbol '^' power
-				{
-					MonomlPower($1, $3);
-				}
  			;
 
 power 		: number
 				{
 					$$ = $1;
-				}
+				}		
 			| power '+' power
 				{
 					$$ = $1 + $3;
@@ -189,20 +183,31 @@ symbol		: number
 					$$ = MonomialInit(0, 1, $1);
 					;
 				}
+			| minus number '^' %prec NEG
+				{
+					printf("Negative exponents are not supported\n");
+					exit(0);
+				}	
 			| term
  				{
  					$$ = MonomialInit($1, 1, 1);
  				}
+			| symbol '^' power
+				{
+					MonomlPower($1, $3);
+				}
 
 %%                     /* C code */
+
 
 int main (void) {
 	/* init symbol table */
 	int i;
 	symbols = (struct Exp*)calloc(COUNT_POLINOM, sizeof(struct Exp));
 	
-	return yyparse ( );
+	return yyparse ();
 }
+
 
 void yyerror (char *s) {fprintf (stderr, "%s\n", s);} 
 

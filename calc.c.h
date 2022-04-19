@@ -64,6 +64,7 @@ void DeleteMonom(struct Exp *polynom, int *monom, int idx)
 		{
 			for(int i = 1; i < SIZE_MONOM; i++)
 				polynom->structure[idx][i] += monom[i];
+			polynom->size ++;
 		}
 		polynom->structure[idx][0] -= monom[0];
 	}
@@ -105,7 +106,7 @@ void PolynomMinus(struct Exp *polynom_1, struct Exp *polynom_2)
  	for(int i = 0; i < COUNT_MONOM; i++)
  	{
  		idx_monom_in_polynom_1 = SearchMonom(polynom_1->structure, polynom_2->structure[i]);
- 		DeleteMonom(polynom_1, polynom_2->structure[i], idx_monom_in_polynom_1);
+		DeleteMonom(polynom_1, polynom_2->structure[i], idx_monom_in_polynom_1);
 		
  		if(polynom_2->structure[i + 1][0] == 0)
  			break;
@@ -186,7 +187,7 @@ void PrintPolynom(struct Exp* polynom)
 	
 	if(polynom->size == 0)
 	{
-		printf("0");
+		printf("0\n");
 		return;
 	}	
 	for(i = 0; i < COUNT_MONOM; i++)
@@ -224,10 +225,10 @@ void PrintPolynom(struct Exp* polynom)
 				}
 			}
 		}
-		if(elem_monom == 0)
-		{
-			printf("%d", polynom->structure[i][0]);
-		}
+		//if(elem_monom == 0)
+		//{
+		//	printf("%d", polynom->structure[i][0]);
+		//}
 	}
 	printf("\n");
 }
