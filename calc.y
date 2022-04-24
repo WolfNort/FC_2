@@ -37,11 +37,12 @@ int yylex();
 %type <id> assignment
 
 %left '+' 
-%left minus
 %left NEG
-%left '^'
-%right '*'
+%left minus
+%left '*'
+%right '^'
 %left '(' ')'
+
 
 %%
 begin 		: begin line 
@@ -75,6 +76,7 @@ line		: assignment ';'
 
 assignment	: variable '=' polynom 		
 				{
+					printf("variable '=' polynom\n");
 					int idx = CharSymbolToIndex($1);
 					AssignmentPolynom($1, $3);
 				}
@@ -98,35 +100,43 @@ errors 		:
 
 polynom 	: minus polynom %prec NEG
 				{
+					printf("minus polynom prec NEG\n");
 					$$ = PolynomInit();
 					PolynomMinus($$, $2);
 				} 
 			| brackets
 				{
+					printf("brackets\n");
 					$$ =$1;
 				}
 			| brackets brackets %prec '*'
 				{
+					printf("brackets brackets prec '*'\n");
 					$$ = PolynomMultiple($1, $2);
 				}
 			| polynom minus polynom
 				{
+					printf("polynom minus polynom\n");
 					PolynomMinus($1, $3);
 				}
  			| polynom '+' polynom			
  				{
-					PolynomSummary($1, $3); 					
+					printf(" polynom '+' polynom\n");
+					PolynomSummary($1, $3); 				
  				}
 			| polynom '*' polynom
 				{
+					printf("polynom '*' polynom\n");
 					$$ = PolynomMultiple($1, $3);
 				}
 			| variable
 				{
+					printf("variable\n");
 					$$ = GetPolynom($1);;
 				}
  			| monom 							
  				{	
+					printf("monom\n");
  					$$ = PolynomInit();
  					AddMonom($$, $1, 0);
  				}
@@ -134,66 +144,79 @@ polynom 	: minus polynom %prec NEG
 
 brackets 	: '(' polynom ')'
 				{
+					printf("'(' polynom ')'\n");
 					$$ = $2;
 				}
 			| brackets '^' power
 				{
+					printf("brackets '^' power\n");
 					$$ = PolynomPower($1, $3);;
 				}
 			;
 
  monom 		: symbol
 				{
+					printf("symbol\n");
 					$$ = $1;
 				}
 			| symbol monom
 				{
+					printf("symbol monom\n");
 					$$ = MonomialMultipl($1, $2);;
 				}
  			;
 
 power 		: number
 				{
+					printf("number\n");
 					$$ = $1;
-				}		
+				}
 			| power '+' power
 				{
+					printf("power '+' power\n");
 					$$ = $1 + $3;
 				}
 			| power minus power
 				{
+					printf("power minus power\n");
 					$$ = $1 - $3;
 				}
 			| power '*' power
 				{
+					printf("power '*' power\n");
 					$$ = $1 * $3;
 				}
 			| power '^' power 
 				{
+					printf("power %d '^' %d power \n", $1, $3);
 					$$ = pow($1, $3);
+				}
+			| minus power %prec NEG	
+				{
+					printf("minus power prec NEG\n");
+					$$ = 0 - $2;
 				}
 			| '(' power ')'
 				{
+					printf("'(' power ')'\n");
 					$$ = $2;
 				}
 			;
 
 symbol		: number
 				{
+					printf("number - %d\n", $1);
 					$$ = MonomialInit(0, 1, $1);
 					;
 				}
-			// | minus number '^' %prec NEG
-			// 	{
-			// 		printf("Negative exponents are not supported\n");
-			// 		exit(0);
-			// 	}	
 			| term
  				{
+					printf("term\n");
  					$$ = MonomialInit($1, 1, 1);
  				}
 			| symbol '^' power
 				{
+					printf("symbol '^' power\n");
 					MonomlPower($1, $3);
 				}
 

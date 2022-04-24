@@ -41,23 +41,42 @@ int SearchMonom(int **structure_poly_1, int *monom_poly_2)
 		}
 }
 
+void RemoveEmptyMonom(struct Exp *polynom, int idx)
+{
+	printf("RemoveEmptyMonom\n");
+	for(int i = idx; i < COUNT_MONOM; i++)
+	{
+		polynom->structure[i] = polynom->structure[i+1];
+		if(polynom->structure[i+1][0] == 0)
+			break;
+	}
+	polynom->size --;
+}
+
 void AddMonom(struct Exp *polynom, int *monom, int idx)
 {
 	//add a new monomial
+	printf("\n\n\nAdd_monom\n\n");
 	if((polynom->structure[idx][0] == 0) && (monom[0] != 0))
 	{
 		polynom->size +=1;
 		for(int i = 1; i < SIZE_MONOM; i++)
 			polynom->structure[idx][i] += monom[i];
-		
 	}
 	//the monomials are the same, you need to change the coeff
-	polynom->structure[idx][0] += monom[0];
+	//PrintMatrix(polynom);
+	polynom->structure[idx][0] = polynom->structure[idx][0] + monom[0];
+	//PrintMatrix(polynom);
+	if((polynom->structure[idx][0] == 0) &&(polynom->size != 0) && (monom[0] != 0))
+		RemoveEmptyMonom(polynom, idx);
+	
 }
 
-void DeleteMonom(struct Exp *polynom, int *monom, int idx)
+void MinusMonom(struct Exp *polynom, int *monom, int idx)
 {
+	printf("\n\nMinusMonom\n\n");
 	//minus a new monomial
+	printf("%d - %d",polynom->structure[idx][0], monom[0] );
 	if(polynom->structure[idx][0] != monom[0])
 	{
 		if(polynom->structure[idx][0] == 0)
@@ -67,11 +86,16 @@ void DeleteMonom(struct Exp *polynom, int *monom, int idx)
 			polynom->size ++;
 		}
 		polynom->structure[idx][0] -= monom[0];
+		if((polynom->structure[idx][0] == 0)&&(polynom->size != 0))
+			RemoveEmptyMonom(polynom, idx);
 	}
 	else
 	{
 		for(int i = 0; i < SIZE_MONOM; i++)
 			polynom->structure[idx][i] = 0;
+		polynom->size--;
+		if(polynom->size != 0)
+			RemoveEmptyMonom(polynom, idx);
 	}
 	//the monomials are the same, you need to change the coeff
 	
@@ -88,29 +112,31 @@ void AssignmentPolynom(char variable,struct Exp *polynom)
 void PolynomSummary(struct Exp *polynom_1, struct Exp *polynom_2)
 {
 	int idx_monom_in_polynom_1 = 0;
-
+	
 	for(int i = 0; i < COUNT_MONOM; i++)
 	{
 		idx_monom_in_polynom_1 = SearchMonom(polynom_1->structure, polynom_2->structure[i]);
+		//printf("PolynomSummary - %d", idx_monom_in_polynom_1);
 		AddMonom(polynom_1, polynom_2->structure[i], idx_monom_in_polynom_1);
-		
+
 		if(polynom_2->structure[i + 1][0] == 0)
 			break;
 	}
+
 }
 
 void PolynomMinus(struct Exp *polynom_1, struct Exp *polynom_2)
 {
- 	int idx_monom_in_polynom_1 = 0;
-
+	int idx_monom_in_polynom_1 = 0;
  	for(int i = 0; i < COUNT_MONOM; i++)
  	{
  		idx_monom_in_polynom_1 = SearchMonom(polynom_1->structure, polynom_2->structure[i]);
-		DeleteMonom(polynom_1, polynom_2->structure[i], idx_monom_in_polynom_1);
+		MinusMonom(polynom_1, polynom_2->structure[i], idx_monom_in_polynom_1);
 		
  		if(polynom_2->structure[i + 1][0] == 0)
  			break;
 	}
+
 }
 
 struct Exp* PolynomMultiple(struct Exp *polynom_1, struct Exp *polynom_2)
@@ -175,16 +201,32 @@ void MonomlPower(int* monom, int power)
 		if(monom[i] != 0)
 			monom[i] *= power;
 	}
-	monom[0] = pow(monom[0], power);
+	if((monom[0] == 0)&&(power == 0))
+	{
+		printf("Error uncertainty\n");
+		exit(-1);
+	}
+	else
+		monom[0] = pow(monom[0], power);
 }
 
+void PrintMatrix(struct Exp* polynom)
+{
+	printf("\n");
+	for(int i = 0; i < COUNT_MONOM; i++)
+	{
+		for(int j = 0; j < SIZE_MONOM; j++)
+			printf("%d ", polynom->structure[i][j]);
+		printf("\n");
+	}
+}
 
 void PrintPolynom(struct Exp* polynom)
 {
 	int i=0, j=0, coeff = 0, elem_monom = 0, flag_begin_monom = 0;
 	char term;
 	printf("%c = ", polynom->id_variable);
-	
+	//PrintMatrix(polynom);
 	if(polynom->size == 0)
 	{
 		printf("0\n");
@@ -192,6 +234,7 @@ void PrintPolynom(struct Exp* polynom)
 	}	
 	for(i = 0; i < COUNT_MONOM; i++)
 	{
+		//printf("\nind %d - %d\n", i, polynom->structure[i][0]);
 		coeff = polynom->structure[i][0];
 		if(coeff != 0)
 		{
@@ -218,17 +261,17 @@ void PrintPolynom(struct Exp* polynom)
 				elem_monom ++;
 				term = IntSymbolToChar(j);
 				printf("%c", term);
-				if(polynom->structure[i][j] > 1)
+				if(polynom->structure[i][j] != 1)
 				{
 					printf("^(");
 					printf("%d)", polynom->structure[i][j]);
 				}
 			}
 		}
-		//if(elem_monom == 0)
-		//{
-		//	printf("%d", polynom->structure[i][0]);
-		//}
+		if((elem_monom == 0)&&(abs(polynom->structure[i][0]) == 1))
+		{
+			printf("%d", abs(polynom->structure[i][0]));
+		}
 	}
 	printf("\n");
 }

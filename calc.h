@@ -28,11 +28,12 @@ void ZeroStruct(struct Exp *new_polynom);
 int* CreateList();
 char IntSymbolToChar(int token);
 int CharSymbolToIndex(char token);
+void PrintMatrix(struct Exp* polynom);
 
 //monomial
 int SearchMonom(int **structure_poly_1, int *monom_poly_2);
 void AddMonom(struct Exp *polynom, int *monom, int idx);
-void DeleteMonom(struct Exp *polynom, int *monom, int idx);
+void MinusMonom(struct Exp *polynom, int *monom, int idx);
 int* MonomialInit(char symbol, int degree, int coef);
 int* MonomialMultipl(int *monom_1, int *monom_2);
 void MonomialPrint(int *result_monom);
