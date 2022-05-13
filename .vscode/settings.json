@@ -10,6 +10,8 @@
         "xstring": "c",
         "xutility": "c",
         "xstddef": "c",
-        "xlocale": "c"
+        "xlocale": "c",
+        "xiosbase": "c",
+        "cstdlib": "c"
     }
 }

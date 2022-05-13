@@ -1,5 +1,5 @@
 %{
-#include "calc.c.h"
+#include "calc.h"
 void yyerror (char *s);
 int yylex();
 %}
@@ -15,8 +15,8 @@ int yylex();
 %token print
 %token exit_command
 %token minus
-
-
+%token next
+%token end
 
 %token <num> number
 
@@ -45,17 +45,25 @@ int yylex();
 
 
 %%
-begin 		: begin line 
+begin 		: line next begin
 				{
 					;
 				}
-			| line 
+			| line next
 				{
 					;
 				}
-
+				
+			| next begin
+				{
+					;
+				}
+			| line end
+				{
+					exit(1);
+				}
 			;
-/* descriptigit ons of expected inputs     corresponding actions (in C) */
+
 line		: assignment ';'	
 				{
 					;
@@ -64,19 +72,20 @@ line		: assignment ';'
 			| print variable ';'
 				{
 					int idx = CharSymbolToIndex($2);
-					PrintPolynom(&symbols[idx]);
+					PrintPolynom(idx);
 				}
-
-			// | errors
-			// {
-			// 	yyerror("Error initialization");
-			// }
-
+			| assignment 
+				{
+					PrintError("Forgot in assignment ';'");
+				}
+			| print variable 
+				{
+					PrintError("Forgot in error ';'");
+				}
 			;
 
 assignment	: variable '=' polynom 		
 				{
-					printf("variable '=' polynom\n");
 					int idx = CharSymbolToIndex($1);
 					AssignmentPolynom($1, $3);
 				}
@@ -85,14 +94,9 @@ assignment	: variable '=' polynom
 					;
 				}
 			;
-errors 		: 
-			'\n'
+errors 		: variable '='
 				{
-					;
-				}
-			| variable '='
-				{
-					yyerror("Error initialization");
+					PrintError("Error initialization");
 					exit(-1);
 				}
 			
@@ -100,43 +104,40 @@ errors 		:
 
 polynom 	: minus polynom %prec NEG
 				{
-					printf("minus polynom prec NEG\n");
 					$$ = PolynomInit();
 					PolynomMinus($$, $2);
 				} 
 			| brackets
 				{
-					printf("brackets\n");
 					$$ =$1;
 				}
 			| brackets brackets %prec '*'
 				{
-					printf("brackets brackets prec '*'\n");
 					$$ = PolynomMultiple($1, $2);
 				}
 			| polynom minus polynom
 				{
-					printf("polynom minus polynom\n");
 					PolynomMinus($1, $3);
 				}
  			| polynom '+' polynom			
  				{
-					printf(" polynom '+' polynom\n");
 					PolynomSummary($1, $3); 				
  				}
 			| polynom '*' polynom
 				{
-					printf("polynom '*' polynom\n");
 					$$ = PolynomMultiple($1, $3);
 				}
 			| variable
 				{
-					printf("variable\n");
-					$$ = GetPolynom($1);;
+					$$ = GetPolynom($1);
+				}
+			| variable '^' power
+				{
+					$$ = GetPolynom($1);
+					$$ = PolynomPower($$, $3);
 				}
  			| monom 							
  				{	
-					printf("monom\n");
  					$$ = PolynomInit();
  					AddMonom($$, $1, 0);
  				}
@@ -144,79 +145,71 @@ polynom 	: minus polynom %prec NEG
 
 brackets 	: '(' polynom ')'
 				{
-					printf("'(' polynom ')'\n");
 					$$ = $2;
 				}
 			| brackets '^' power
 				{
-					printf("brackets '^' power\n");
-					$$ = PolynomPower($1, $3);;
+					$$ = PolynomPower($1, $3);
 				}
 			;
 
  monom 		: symbol
 				{
-					printf("symbol\n");
 					$$ = $1;
 				}
 			| symbol monom
 				{
-					printf("symbol monom\n");
 					$$ = MonomialMultipl($1, $2);;
 				}
  			;
 
 power 		: number
 				{
-					printf("number\n");
 					$$ = $1;
 				}
 			| power '+' power
 				{
-					printf("power '+' power\n");
 					$$ = $1 + $3;
 				}
 			| power minus power
 				{
-					printf("power minus power\n");
 					$$ = $1 - $3;
 				}
 			| power '*' power
 				{
-					printf("power '*' power\n");
-					$$ = $1 * $3;
+					$$ = MultipleNumbers($1,$3);
 				}
 			| power '^' power 
 				{
-					printf("power %d '^' %d power \n", $1, $3);
-					$$ = pow($1, $3);
+					$$ = Pow($1, $3);
 				}
 			| minus power %prec NEG	
 				{
-					printf("minus power prec NEG\n");
+					PrintError("Negative power not supposed");
 					$$ = 0 - $2;
 				}
 			| '(' power ')'
 				{
-					printf("'(' power ')'\n");
 					$$ = $2;
 				}
 			;
 
 symbol		: number
 				{
-					printf("number - %d\n", $1);
 					$$ = MonomialInit(0, 1, $1);
 					;
 				}
 			| term
  				{
-					printf("term\n");
  					$$ = MonomialInit($1, 1, 1);
  				}
+			| print
+				{
+					PrintError("Incorrect assignment");
+				}
 			| symbol '^' power
 				{
-					printf("symbol '^' power\n");
+					//printf("symbol '^' power\n");
 					MonomlPower($1, $3);
 				}
 
@@ -226,11 +219,11 @@ symbol		: number
 int main (void) {
 	/* init symbol table */
 	int i;
-	symbols = (struct Exp*)calloc(COUNT_POLINOM, sizeof(struct Exp));
+	
 	
 	return yyparse ();
 }
 
 
-void yyerror (char *s) {fprintf (stderr, "%s\n", s);} 
+
 
