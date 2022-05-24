@@ -177,11 +177,14 @@ power 		: number
 				}
 			| power '*' power
 				{
+					
 					$$ = MultipleNumbers($1,$3);
 				}
 			| power '^' power 
 				{
+					printf("%d - %d\n", $1, $3);
 					$$ = Pow($1, $3);
+					printf("%d\n", $$);
 				}
 			| minus power %prec NEG	
 				{
@@ -209,7 +212,7 @@ symbol		: number
 				}
 			| symbol '^' power
 				{
-					//printf("symbol '^' power\n");
+					printf("symbol '^' power\n, %d", $3);
 					MonomlPower($1, $3);
 				}
 

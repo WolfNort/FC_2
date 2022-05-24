@@ -464,7 +464,7 @@ static const yytype_uint8 yyrline[] =
        0,    48,    48,    52,    57,    61,    67,    72,    77,    81,
       87,    92,    97,   105,   110,   114,   118,   122,   126,   130,
      134,   139,   146,   150,   156,   160,   166,   170,   174,   178,
-     182,   186,   191,   197,   202,   206,   210
+     183,   189,   194,   200,   205,   209,   213
 };
 #endif
 
@@ -1613,21 +1613,24 @@ yyreduce:
 /* Line 1792 of yacc.c  */
 #line 179 "calc.y"
     {
+					
 					(yyval.num) = MultipleNumbers((yyvsp[(1) - (3)].num),(yyvsp[(3) - (3)].num));
 				}
     break;
 
   case 30:
 /* Line 1792 of yacc.c  */
-#line 183 "calc.y"
+#line 184 "calc.y"
     {
+					printf("%d - %d\n", (yyvsp[(1) - (3)].num), (yyvsp[(3) - (3)].num));
 					(yyval.num) = Pow((yyvsp[(1) - (3)].num), (yyvsp[(3) - (3)].num));
+					printf("%d\n", (yyval.num));
 				}
     break;
 
   case 31:
 /* Line 1792 of yacc.c  */
-#line 187 "calc.y"
+#line 190 "calc.y"
     {
 					PrintError("Negative power not supposed");
 					(yyval.num) = 0 - (yyvsp[(2) - (2)].num);
@@ -1636,7 +1639,7 @@ yyreduce:
 
   case 32:
 /* Line 1792 of yacc.c  */
-#line 192 "calc.y"
+#line 195 "calc.y"
     {
 					(yyval.num) = (yyvsp[(2) - (3)].num);
 				}
@@ -1644,7 +1647,7 @@ yyreduce:
 
   case 33:
 /* Line 1792 of yacc.c  */
-#line 198 "calc.y"
+#line 201 "calc.y"
     {
 					(yyval.piece_formula) = MonomialInit(0, 1, (yyvsp[(1) - (1)].num));
 					;
@@ -1653,7 +1656,7 @@ yyreduce:
 
   case 34:
 /* Line 1792 of yacc.c  */
-#line 203 "calc.y"
+#line 206 "calc.y"
     {
  					(yyval.piece_formula) = MonomialInit((yyvsp[(1) - (1)].id), 1, 1);
  				}
@@ -1661,7 +1664,7 @@ yyreduce:
 
   case 35:
 /* Line 1792 of yacc.c  */
-#line 207 "calc.y"
+#line 210 "calc.y"
     {
 					PrintError("Incorrect assignment");
 				}
@@ -1669,16 +1672,16 @@ yyreduce:
 
   case 36:
 /* Line 1792 of yacc.c  */
-#line 211 "calc.y"
+#line 214 "calc.y"
     {
-					//printf("symbol '^' power\n");
+					printf("symbol '^' power\n, %d", (yyvsp[(3) - (3)].num));
 					MonomlPower((yyvsp[(1) - (3)].piece_formula), (yyvsp[(3) - (3)].num));
 				}
     break;
 
 
 /* Line 1792 of yacc.c  */
-#line 1682 "calc.tab.c"
+#line 1685 "calc.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1910,7 +1913,7 @@ yyreturn:
 
 
 /* Line 2055 of yacc.c  */
-#line 216 "calc.y"
+#line 219 "calc.y"
                      /* C code */
 
 

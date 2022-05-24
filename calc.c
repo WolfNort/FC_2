@@ -5,10 +5,10 @@ struct Exp *symbols = NULL;
 
 int Pow(int var_p, int power_p)
 {
-	for(int i = 1; i < power_p; i++)
-		var_p *= var_p;
-
-	return var_p;
+	int result = 1;
+	for(int i = 0; i < power_p; i++)
+		result *= var_p;
+	return result;
 }
 
 int MultipleNumbers(int a, int b)
@@ -70,7 +70,7 @@ void ZeroStruct(struct Exp *new_polynom)
 
 int SearchMonom(int **structure_poly_1, int *monom_poly_2)
 {
-	if(monom_poly_2 != NULL || structure_poly_1 != NULL)
+	if((monom_poly_2 != NULL) & (structure_poly_1 != NULL))
 	{
 		for(int i = 0; i < COUNT_MONOM; i++)
 		{
@@ -134,29 +134,30 @@ void AddMonom(struct Exp *polynom, int *monom, int idx)
 
 void MinusMonom(struct Exp *polynom, int *monom, int idx)
 {
-	//printf("\n\nMinusMonom\n\n");
-	//minus a new monomial
-	//printf("%d - %d",polynom->structure[idx][0], monom[0] );
-	if(polynom->structure[idx][0] != monom[0])
+	int number = 0;
+	int **poly = polynom->structure;
+	printf("MinusMonom\n");
+	if(monom[0] != 0)
 	{
-		if(polynom->structure[idx][0] == 0)
+		if(poly[idx][0] == 0)
 		{
 			for(int i = 1; i < SIZE_MONOM; i++)
-				polynom->structure[idx][i] += monom[i];
+				poly[idx][i] += monom[i];
 			polynom->size ++;
 		}
-		polynom->structure[idx][0] -= monom[0];
-		if((polynom->structure[idx][0] == 0)&&(polynom->size != 0))
+
+		PrintMatrix(polynom);
+		number = poly[idx][0] - monom[0];
+		printf("idx = %d\n", idx);
+		printf("1 - %d, 2 - %d\n", poly[idx][0], poly[idx+1][0]);
+		poly[idx][0] = number;
+		printf("1 - %d, 2 - %d\n", poly[idx][0], poly[idx+1][0]);
+		PrintMatrix(polynom);
+
+		if((poly[idx][0] == 0)&&(polynom->size != 0))
 			RemoveEmptyMonom(polynom, idx);
 	}
-	else
-	{
-		for(int i = 0; i < SIZE_MONOM; i++)
-			polynom->structure[idx][i] = 0;
-		polynom->size--;
-		if(polynom->size != 0)
-			RemoveEmptyMonom(polynom, idx);
-	}
+
 	//the monomials are the same, you need to change the coeff
 	
 }
@@ -166,8 +167,12 @@ void AssignmentPolynom(char variable_p,struct Exp *polynom)
 	polynom->id_variable = variable_p;
 	if(symbols == NULL)
 		symbols = (struct Exp*)calloc(COUNT_POLINOM, sizeof(struct Exp));
+
 	int symbols_idx = CharSymbolToIndex(variable_p);
+
+
 	symbols[symbols_idx] = *polynom;
+
 }
 
 void PolynomSummary(struct Exp *polynom_1, struct Exp *polynom_2)
@@ -188,16 +193,19 @@ void PolynomSummary(struct Exp *polynom_1, struct Exp *polynom_2)
 
 void PolynomMinus(struct Exp *polynom_1, struct Exp *polynom_2)
 {
+	PrintMatrix(polynom_1);
+	PrintMatrix(polynom_2);
 	int idx_monom_in_polynom_1 = 0;
  	for(int i = 0; i < COUNT_MONOM; i++)
  	{
  		idx_monom_in_polynom_1 = SearchMonom(polynom_1->structure, polynom_2->structure[i]);
+		printf("idx_monom_in_polynom_1 = %d\n", idx_monom_in_polynom_1);
+		
 		MinusMonom(polynom_1, polynom_2->structure[i], idx_monom_in_polynom_1);
 		
  		if(polynom_2->structure[i + 1][0] == 0)
  			break;
 	}
-
 }
 
 struct Exp* PolynomMultiple(struct Exp *polynom_1, struct Exp *polynom_2)
@@ -276,67 +284,78 @@ void PrintMatrix(struct Exp* polynom)
 	printf("\n");
 	for(int i = 0; i < COUNT_MONOM; i++)
 	{
-		for(int j = 0; j < SIZE_MONOM; j++)
-			printf("%d ", polynom->structure[i][j]);
-		printf("\n");
+		if(polynom->structure[i][0] != 0)
+		{
+			for(int j = 0; j < SIZE_MONOM; j++)
+				printf("%d ", polynom->structure[i][j]);
+			printf("\n");
+		}
+		else 
+			break;
 	}
 }
 
 void PrintPolynom(int idx)
 {
 	struct Exp* polynom = &symbols[idx];
-	int i=0, j=0, coeff = 0, elem_monom = 0, flag_begin_monom = 0, number = 0 ;
+	int i=0, j=0, coeff = 0, count_elem = 0, flag_begin_monom = 0, positiv_coeff = 0 ;
 	char term;
+	PrintMatrix(polynom);
 	printf("%c = ", polynom->id_variable);
-	//PrintMatrix(polynom);
+
 	if(polynom->size == 0)
 	{
 		printf("0\n");
 		return;
 	}	
-	for(i = 0; i < COUNT_MONOM; i++)
+	else
 	{
-		//printf("\nind %d - %d\n", i, polynom->structure[i][0]);
-		coeff = polynom->structure[i][0];
-		if(coeff != 0)
+		for(i = 0; i < COUNT_MONOM; i++)
 		{
-			if (coeff > 0)
+			coeff = polynom->structure[i][0];
+			if(coeff != 0)
 			{
-				if(flag_begin_monom == 1)
-					printf(" + ");
-			}
-			else
-				printf(" - ");
-			number = abs(coeff);
-			if(number < 0)
-				PrintError("Overflow number");
-			if(number != 1)
-				printf("%d", number);
-			flag_begin_monom = 1;
-		}
-		else 
-			break;
-		
-		for(j = 1; j < SIZE_MONOM; j++)
-		{
-			//sequentially walked along the monomial
-			if(polynom->structure[i][j] != 0) 
-			{
-				elem_monom ++;
-				term = IntSymbolToChar(j);
-				printf("%c", term);
-				if(polynom->structure[i][j] != 1)
+				if (coeff > 0)
 				{
-					printf("^(");
-					printf("%d)", polynom->structure[i][j]);
+					if(flag_begin_monom == 1)
+						printf(" + ");
+				}
+				else
+					printf(" - ");
+
+				positiv_coeff = abs(coeff);
+
+				if (positiv_coeff != 1)
+					printf("%d", positiv_coeff);
+				
+				flag_begin_monom = 1;
+			}
+			else 
+				break;
+
+			for(j = 1; j < SIZE_MONOM; j++)
+			{
+				//sequentially walked along the monomial
+				if(polynom->structure[i][j] != 0) 
+				{
+					count_elem ++;
+					term = IntSymbolToChar(j);
+					printf("%c", term);
+					if(polynom->structure[i][j] != 1)
+					{
+						printf("^(");
+						printf("%d)", polynom->structure[i][j]);
+					}
 				}
 			}
-		}
-		if((elem_monom == 0)&&(abs(polynom->structure[i][0]) == 1))
-		{
-			printf("%d", abs(polynom->structure[i][0]));
+			if((count_elem == 0)&&(positiv_coeff == 1))
+			{
+				printf("%d", positiv_coeff);
+			}
+			count_elem = 0;
 		}
 	}
+
 	printf("\n");
 }
 
@@ -429,11 +448,11 @@ int CharSymbolToIndex(char token)
 
 void yyerror (char *s) 
 {
-	printf("\nError in line %d: %s\n", line_counter, s);
+	printf("\nError in line %d: %s\n", line_counter+1, s);
 	exit(-1);
 } 
 void PrintError(char *s)
 {
-	printf("\nError in line %d: %s\n", line_counter , s);
+	printf("\nError in line %d: %s\n", line_counter+1 , s);
 	exit(-1);
 } 
