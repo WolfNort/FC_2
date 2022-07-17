@@ -3,6 +3,16 @@
 int line_counter = 0;
 struct Exp *symbols = NULL;
 
+void CopyMatrix(struct Exp* dst, struct Exp* src){
+	for(int i = 0; i < COUNT_MONOM; i++)
+		for(int j = 0; j < SIZE_MONOM; j++){
+			dst->structure[i][j] = src->structure[i][j];
+		}	
+	dst->id_variable = src->id_variable;
+	dst->size = src->size;
+}
+
+
 int Pow(int var_p, int power_p)
 {
 	int result = 1;
@@ -132,32 +142,29 @@ void AddMonom(struct Exp *polynom, int *monom, int idx)
 	
 }
 
-void MinusMonom(struct Exp *polynom, int *monom, int idx)
+void MinusMonom(struct Expression *polynom, int *monom, int idx)
 {
-	int number = 0;
-	int **poly = polynom->structure;
-	printf("MinusMonom\n");
-	if(monom[0] != 0)
-	{
-		if(poly[idx][0] == 0)
+	
+	if(polynom->structure[idx][0] != monom[0])
+	{ 
+		if(polynom->structure[idx][0] == 0)
 		{
 			for(int i = 1; i < SIZE_MONOM; i++)
-				poly[idx][i] += monom[i];
+				polynom->structure[idx][i] += monom[i];
 			polynom->size ++;
 		}
-
-		PrintMatrix(polynom);
-		number = poly[idx][0] - monom[0];
-		printf("idx = %d\n", idx);
-		printf("1 - %d, 2 - %d\n", poly[idx][0], poly[idx+1][0]);
-		poly[idx][0] = number;
-		printf("1 - %d, 2 - %d\n", poly[idx][0], poly[idx+1][0]);
-		PrintMatrix(polynom);
-
-		if((poly[idx][0] == 0)&&(polynom->size != 0))
+		polynom->structure[idx][0] -= monom[0];
+		if((polynom->structure[idx][0] == 0)&&(polynom->size != 0))
 			RemoveEmptyMonom(polynom, idx);
 	}
-
+	else
+	{
+		for(int i = 0; i < SIZE_MONOM; i++)
+			polynom->structure[idx][i] = 0;
+		polynom->size--;
+		if(polynom->size != 0)
+			RemoveEmptyMonom(polynom, idx);
+	}
 	//the monomials are the same, you need to change the coeff
 	
 }
@@ -175,37 +182,39 @@ void AssignmentPolynom(char variable_p,struct Exp *polynom)
 
 }
 
-void PolynomSummary(struct Exp *polynom_1, struct Exp *polynom_2)
+struct Exp* PolynomSummary(struct Exp *polynom_1, struct Exp *polynom_2)
 {
 	int idx_monom_in_polynom_1 = 0;
-	
+	struct Exp *result = PolynomInit();
+	CopyMatrix(result,polynom_1);
 	for(int i = 0; i < COUNT_MONOM; i++)
 	{
-		idx_monom_in_polynom_1 = SearchMonom(polynom_1->structure, polynom_2->structure[i]);
+		idx_monom_in_polynom_1 = SearchMonom(result->structure, polynom_2->structure[i]);
 		//printf("PolynomSummary - %d", idx_monom_in_polynom_1);
-		AddMonom(polynom_1, polynom_2->structure[i], idx_monom_in_polynom_1);
+		AddMonom(result, polynom_2->structure[i], idx_monom_in_polynom_1);
 
 		if(polynom_2->structure[i + 1][0] == 0)
 			break;
 	}
-
+	return result;
 }
 
-void PolynomMinus(struct Exp *polynom_1, struct Exp *polynom_2)
-{
-	PrintMatrix(polynom_1);
-	PrintMatrix(polynom_2);
+struct Exp* PolynomMinus(struct Exp *polynom_1, struct Exp *polynom_2){
 	int idx_monom_in_polynom_1 = 0;
+	struct Exp *result = PolynomInit();
+	CopyMatrix(result,polynom_1);
+	// PrintMatrix(result);
+	// std::cout << "\n----------\n";
+	// PrintMatrix(polynom_1);
  	for(int i = 0; i < COUNT_MONOM; i++)
  	{
- 		idx_monom_in_polynom_1 = SearchMonom(polynom_1->structure, polynom_2->structure[i]);
-		printf("idx_monom_in_polynom_1 = %d\n", idx_monom_in_polynom_1);
-		
-		MinusMonom(polynom_1, polynom_2->structure[i], idx_monom_in_polynom_1);
+ 		idx_monom_in_polynom_1 = SearchMonom(result->structure, polynom_2->structure[i]);
+		MinusMonom(result, polynom_2->structure[i], idx_monom_in_polynom_1);
 		
  		if(polynom_2->structure[i + 1][0] == 0)
  			break;
 	}
+	return result;
 }
 
 struct Exp* PolynomMultiple(struct Exp *polynom_1, struct Exp *polynom_2)
