@@ -64,7 +64,7 @@ begin 		: line next begin
 				}
 			;
 
-line		: assignment ';'	
+line		: assignment ';' expression	
 				{
 					;
 				}
@@ -83,6 +83,9 @@ line		: assignment ';'
 					PrintError("Forgot in error ';'");
 				}
 			;
+
+expression: 		{;}
+			| line 	{;}
 
 assignment	: variable '=' polynom 		
 				{
@@ -107,6 +110,10 @@ polynom 	: minus polynom %prec NEG
 					$$ = PolynomInit();
 					PolynomMinus($$, $2);
 				} 
+			| PLUS polynom %prec NEG
+			{
+				$$ =  $2;
+			}  
 			| brackets
 				{
 					$$ =$1;
@@ -117,11 +124,11 @@ polynom 	: minus polynom %prec NEG
 				}
 			| polynom minus polynom
 				{
-					PolynomMinus($1, $3);
+					$$ = PolynomMinus($1, $3);
 				}
  			| polynom '+' polynom			
  				{
-					PolynomSummary($1, $3); 				
+					$$ = PolynomSummary($1, $3); 				
  				}
 			| polynom '*' polynom
 				{
